@@ -1,65 +1,69 @@
-# 1. ENTENDER EL PROBLEMA
-# ENTRADA: dígito/número en texto y desplazamiento clave (1-9)
-# PROCESO: convertir a código ASCII, desplazar dígito con %, guardar historial
-# SALIDA: número codificado en texto
-# EJEMPLO DE ENTRADA:
-# en = EncriptadorNumerico()
-# en.codificar_numero("981", 3)
-# SALIDA ESPERADA:
-# "214"
+# Ej. 16 MEDIO  Codificador/Decodificador
 
+# Clase CodificadorCesar que: (1) tenga método codificar_letra(letra, desplazamiento) que retorne la letra desplazada en el alfabeto (usar operador %); (2) tenga método codificar_palabra(palabra, desplazamiento) que reutilice el anterior para toda la palabra; (3) tenga un diccionario como atributo para historial de codificaciones.
 
-# 2. BOSQUEJO
-# codificar_digito('9', 3):
-#   ord('9') -> 57
-#   código relativo a '0' (48): 57 - 48 = 9
-#   desplazamiento con módulo: (9 + 3) % 10 = 2
-#   volver a ASCII: 2 + 48 = 50 -> chr(50) -> '2'
-#
-# codificar_numero("981", 3):
-#   '9' + 3 -> '2'
-#   '8' + 3 -> '1'
-#   '1' + 3 -> '4'
-#   Guarda en historial: {"981": "214"}
-#   Retorna: "214"
+# ENTRADA
+# letra/palabra y desplazamiento (1-25)
 
+# PROCESO
+# convertir a código ASCII, desplazar con %, guardar historial
 
-# 3. PATRÓN
+# SALIDA
+# palabra codificada
+
+# EJEMPLO DE ENTRADA
+# cc = CodificadorCesar()
+# cc.codificar_palabra("hola", 3)
+
+# SALIDA ESPERADA
+# "krod" (Nota: "hola" con desplazamiento +3 genera "krod")
+
 # Colecciones: diccionario para historial; ord() y chr() para conversión
 
 
-# 4. CÓDIGO
-class EncriptadorNumerico:
+class CodificadorCesar:
 
     def __init__(self):
         self.historial = {}
 
-    def codificar_digito(self, digito, desplazamiento):
-        if '0' <= digito <= '9':
-            base = ord('0')
-            nuevo_codigo = (ord(digito) - base + desplazamiento) % 10 + base
+    def codificar_letra(self, letra, desplazamiento):
+        if 'a' <= letra <= 'z':
+            base = ord('a')
+            nuevo_codigo = (ord(letra) - base + desplazamiento) % 26 + base
             return chr(nuevo_codigo)
-        return digito
+        elif 'A' <= letra <= 'Z':
+            base = ord('A')
+            nuevo_codigo = (ord(letra) - base + desplazamiento) % 26 + base
+            return chr(nuevo_codigo)
+        return letra
 
-    def codificar_numero(self, numero_texto, desplazamiento):
+    def codificar_palabra(self, palabra, desplazamiento):
         resultado = []
-        for digito in numero_texto:
-            resultado.append(self.codificar_digito(digito, desplazamiento))
+        for caracter in palabra:
+            letra_codificada = self.codificar_letra(caracter, desplazamiento)
+            resultado.append(letra_codificada)
 
-        numero_codificado = "".join(resultado)
-        self.historial[numero_texto] = numero_codificado
-        return numero_codificado
+        palabra_codificada = "".join(resultado)
+        self.historial[palabra] = palabra_codificada
+        return palabra_codificada
 
-# 5. PRUEBA / DEPURACIÓN DETALLADA
-en = EncriptadorNumerico()
+# DEPURACIÓN / PRUEBA DE ESCRITORIO
+# cc = CodificadorCesar() -> self.historial = {}
 
-# --- Prueba Método 1: codificar_digito('8', 3) ---
-salida1 = en.codificar_digito('8', 3)
-print("Salida 1:", salida1)
+# 1. Probar codificar_letra:
+# cc.codificar_letra('h', 3)
+# -> base = ord('a') = 97
+# -> ord('h') = 104
+# -> (104 - 97 + 3) % 26 + 97 = 10 % 26 + 97 = 107
+# -> chr(107) = 'k'
 
-# --- Prueba Método 2: codificar_numero("981", 3) ---
-salida2 = en.codificar_numero("981", 3)
-print("Salida 2:", salida2)
+# 2. Probar codificar_palabra:
+# cc.codificar_palabra("hola", 3)
+# -> 'h' -> 'k'
+# -> 'o' -> 'r'
+# -> 'l' -> 'o'
+# -> 'a' -> 'd'
+# -> palabra_codificada = "krod"
+# -> self.historial["hola"] = "krod"
+# -> Retorna: "krod"
 
-# --- Prueba Historial ---
-print("Historial:", en.historial)
